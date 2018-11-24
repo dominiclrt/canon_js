@@ -2,6 +2,14 @@ var socket = io();
 var canvas = document.getElementById('canvas');
 var context = canvas.getContext('2d');
 
+
+// var url_string = "badgebook"; //window.location.href
+// var url = new URL(url_string);
+// /* if(url.getParameterByName('t') == null){
+//   window.location.href = "www.bagebook";
+     //Store token in localstorage
+// } */
+
 username = document.getElementById('username-field');
 username.addEventListener('keydown', function(event) {
 	if(event.key == 'Enter') {

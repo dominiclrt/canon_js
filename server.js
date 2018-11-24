@@ -1,8 +1,10 @@
-// Dependencies
 var express = require('express');
 var http = require('http');
 var path = require('path');
 var socketIO = require('socket.io');
+var request = require('request');
+var api_calls = require('./helpers')
+
 
 const app = express();
 var server = http.Server(app);
@@ -13,6 +15,7 @@ var CANVAS_HEIGHT = 720; //Canvas height
 
 var TANK_WIDTH = 40;
 var TANK_HEIGHT = 40;
+
 
 /*
 Place holder object
@@ -48,8 +51,12 @@ app.get('/', function(request, response) {
 
 // Starts the server.
 server.listen(process.env.PORT || 5000, function() {
-  console.log('Starting server on port 8080');
+  console.log('Starting server on port 5000');
 });
+
+
+
+
 
 // Add the WebSocket handlers
 
@@ -112,8 +119,9 @@ function createNewPlayer(newColor, USER){
     weaponPowerUp: 0,
     speedUp: 0,
     health: 3,
-    score: 0
+    score: 0,
   };
+  
   spawn(newPlayer);
   return newPlayer;
 }
@@ -247,10 +255,12 @@ function updateProj(){
     if ((deltaX >= 0 && proj.x <= (CANVAS_WIDTH - 20)) || (deltaX <= 0 && proj.x >= 0)) {
       proj.x += deltaX;
     }
+
     else {
       bullets.splice(i, 1);
       outOfBounds = true;
     }
+
     if ((deltaY >= 0 && proj.y <= (CANVAS_HEIGHT - 20)) || (deltaY <= 0 && proj.y >= 5)) {
       proj.y += deltaY;
     }
@@ -258,6 +268,7 @@ function updateProj(){
       bullets.splice(i, 1);
       outOfBounds = true;
     }
+
     if(!outOfBounds){
       checkProjCollision(i)
     }
@@ -286,8 +297,20 @@ function updatePlayerPos(player){
 }
 
 io.on('connection', function(socket){
+
 	socket.on('new-user', function (data) {
-		players[socket.id].name = data;
+    players[socket.id].name = data;
+
+    if(api_calls.get_req_tanks_id('http://tankgame-api.herokuapp.com/api/tanks/' + socket.id)){
+      const player = {
+        "userID": socket.id,
+        "userScore": 0,
+        "badgeImgURL": "beginner_badge.com"
+      }
+      api_calls.post_req_tanks(player);
+      console.log('NEW TANK CREATED!')
+    }
+    
 	});
 
   socket.on('new player', function() {
