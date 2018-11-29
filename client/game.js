@@ -7,18 +7,18 @@ var context = canvas.getContext('2d');
 // var url = new URL(url_string);
 // /* if(url.getParameterByName('t') == null){
 //   window.location.href = "www.bagebook";
-     //Store token in localstorage
+//Store token in localstorage
 // } */
 
 username = document.getElementById('username-field');
 username.addEventListener('keydown', function(event) {
-	if(event.key == 'Enter') {
-		let value = username.value;
-		if(value != "") {
-			USER = value;
-			hideModal();
-			socket.emit('new-user', USER);
-		}
+  if (event.key == 'Enter') {
+    let value = username.value;
+    if (value != "") {
+      USER = value;
+      hideModal();
+      socket.emit('new-user', USER);
+    }
   }
 });
 
@@ -26,16 +26,16 @@ username.addEventListener('keydown', function(event) {
 Hide nickname prompt after being filled out
  */
 function hideModal() {
-	let backdrop = document.getElementsByClassName('modal-backdrop')[0];
-	let modal = document.getElementsByClassName('modal')[0];
-	backdrop.classList.add('hidden');
-	modal.classList.add('hidden');
+  let backdrop = document.getElementsByClassName('modal-backdrop')[0];
+  let modal = document.getElementsByClassName('modal')[0];
+  backdrop.classList.add('hidden');
+  modal.classList.add('hidden');
 }
 
 /*
 Draw rotating tank animation
  */
-function drawRotations(img,x,y,width,height,angle) {
+function drawRotations(img, x, y, width, height, angle) {
 
   let rad = angle;
 
@@ -46,17 +46,17 @@ function drawRotations(img,x,y,width,height,angle) {
   context.rotate(rad);
 
   //draw the image
-  context.drawImage(img,width / 2 * (-1),height / 2 * (-1),width,height);
+  context.drawImage(img, width / 2 * (-1), height / 2 * (-1), width, height);
 
   //reset the canvas
-  context.rotate(rad * ( -1 ) );
+  context.rotate(rad * (-1));
   context.translate((x + width / 2) * (-1), (y + height / 2) * (-1));
 }
 
 /*
 Show player health
  */
-function showHealth(player){
+function showHealth(player) {
   let imgName = 'health';
   imgName += player.health; //append health number to load correct image
 
@@ -67,7 +67,7 @@ function showHealth(player){
 function appendScores(players) {
   let tBody = document.createElement('tbody');
 
-  for(let id in players) {
+  for (let id in players) {
     let player = players[id];
     let row = document.createElement("tr");
     let playerName = document.createElement("td");
@@ -155,23 +155,34 @@ setInterval(function() {
 socket.on('state', function(players, projectiles, xMax, yMax) {
   canvas.width = xMax;
   canvas.height = yMax;
-  context.fillStyle='#f9f8eb';
+  context.fillStyle = '#f9f8eb';
   context.fillRect(0, 0, xMax, yMax);
 
   displayScore(players);
 
   for (let id in players) {
     let player = players[id];
-    if(player.dead == 0) { //player is not dead
+    if (player.dead == 0) { //player is not dead
       let tank = document.getElementById(player.color);
       drawRotations(tank, player.x, player.y, 40, 40, player.angle);
       showHealth(player);
+    } else { //player's tank was destroyed, display explosion
+      var explosion;
+      switch (true) { //gross but works
+        case (player.dead >= 32):
+          explosion = document.getElementById('explosion1');
+          break;
+        default:
+          explosion = explosion = document.getElementById('explosion1');
+          break;
+      }
+      drawRotations(explosion, player.x, player.y, 50, 50, player.angle);
     }
   }
 
-  for(let i = 0; i < projectiles.length; ++i){
+  for (let i = 0; i < projectiles.length; ++i) {
     let proj = projectiles[i];
-    context.fillStyle= 'black';
+    context.fillStyle = 'black';
     context.fillRect(proj.x, proj.y, 10, 10);
   }
 
