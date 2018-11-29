@@ -87,13 +87,9 @@ put_req_tanks: function (userData, userURL){
 
 get_req_highscores: function (){
     request(
-        { method: 'GET'
-        , uri: 'http://tankgame-api.herokuapp.com/api/highscores'
-        , multipart:
-        [ { 'content-type': 'application/json'
-            ,  body: JSON.stringify(userData),
-            }
-        ]
+        { 
+            method: 'GET',
+            uri: 'http://tankgame-api.herokuapp.com/api/highscores'
         }
     , function (error, response, body) {
         if(response.statusCode == 200){

@@ -301,15 +301,15 @@ io.on('connection', function(socket){
 	socket.on('new-user', function (data) {
     players[socket.id].name = data;
 
-    if(api_calls.get_req_tanks_id('http://tankgame-api.herokuapp.com/api/tanks/' + socket.id)){
       const player = {
         "userID": socket.id,
         "userScore": 0,
         "badgeImgURL": "beginner_badge.com"
       }
-      api_calls.post_req_tanks(player);
       console.log('NEW TANK CREATED!')
-    }
+      api_calls.post_req_tanks(player);
+
+    
     
 	});
 

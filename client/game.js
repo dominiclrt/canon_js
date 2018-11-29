@@ -19,7 +19,7 @@ username.addEventListener('keydown', function(event) {
 			hideModal();
 			socket.emit('new-user', USER);
 		}
-	}
+  }
 });
 
 /*
