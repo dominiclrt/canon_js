@@ -1,7 +1,7 @@
 var socket = io();
 var canvas = document.getElementById('canvas');
 var context = canvas.getContext('2d');
-
+var request = require('request');
 
 // var url_string = "badgebook"; //window.location.href
 // var url = new URL(url_string);
@@ -18,8 +18,15 @@ username.addEventListener('keydown', function(event) {
       USER = value;
       hideModal();
       socket.emit('new-user', USER);
+      const player = {
+        "userID": USER,
+        "userScore": 0,
+        "badgeImgURL": "beginner_badge.com"
+      }
+      console.log('NEW TANK CREATED!');
+      post_req_tanks(player);
     }
-  }
+  } 
 });
 
 /*
@@ -187,3 +194,97 @@ socket.on('state', function(players, projectiles, xMax, yMax) {
   }
 
 });
+
+
+/**
+ * API FUNCTIONS
+ */
+
+
+
+
+function put_req_tanks(userData, userURL) {
+  request({
+    method: 'PUT',
+    uri: userURL,
+    multipart: [{
+      'content-type': 'application/json',
+      body: JSON.stringify(userData),
+    }]
+  }, function(error, response, body) {
+    if (response.statusCode == 200) {
+      console.log(body)
+    } else {
+      console.log('error: ' + response.statusCode)
+    }
+  })
+}
+
+function get_req_tanks_id(userURL) {
+  request({
+    method: 'GET',
+    uri: userURL
+  }, function(error, response, body) {
+    if (response.statusCode == 200) {
+      return response;
+    } else {
+      console.log('error: ' + response.statusCode)
+    }
+  })
+}
+
+
+function get_req_highscores() {
+  request({
+    method: 'GET',
+    uri: 'http://tankgame-api.herokuapp.com/api/highscores'
+  }, function(error, response, body) {
+    if (response.statusCode == 200) {
+      return (body);
+    } else {
+      console.log('error: ' + response.statusCode)
+      return null;
+    }
+  })
+}
+
+ function put_req_highscores(userData) {
+  request({
+    method: 'PUT',
+    uri: 'http://tankgame-api.herokuapp.com/api/highscores',
+    multipart: [{
+      'content-type': 'application/json',
+      body: JSON.stringify(userData),
+    }]
+  }, function(error, response, body) {
+    if (response.statusCode == 200) {
+      console.log(body);
+    } else {
+      console.log('error: ' + response.statusCode)
+    }
+  })
+}
+
+function post_req_tanks(userData){
+  request(
+      { method: 'POST'
+      , uri: 'http://tankgame-api.herokuapp.com/api/tanks'
+      , multipart:
+        [ { 
+          'content-type': 'application/json',
+          body: JSON.stringify(userData),
+          }
+        ]
+      }
+    , function (error, response, body) {
+        if(response.statusCode == 201){
+          console.log(body)
+        } else {
+          console.log('error: '+ response.statusCode)
+          console.log(body)
+        }
+      }
+  
+    )
+
+  }
